@@ -1,15 +1,11 @@
 package ch.get.client;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
 
-import ch.get.common.ClientMessageTag;
 import ch.get.view.RootLayoutController;
 import javafx.application.Platform;
 
@@ -37,13 +33,11 @@ public class ClientImpl implements Client {
 				socket.connect(new InetSocketAddress("localhost", serverPort), 5000); // 접속 5초 타임아웃
 				
 				if (socket.isConnected()) { // 연결이 되었 다면 닉네임 전송
-//					Connections.getConnections().add(socket); // socket List에 적재
-					OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream());
-					BufferedWriter bw = new BufferedWriter(osw);
-					
-					bw.write("TEST001");
-					bw.flush();
-					bw.close(); // 스트림 닫기	
+					String message = "TEST";
+					byte[] byteArr = message.getBytes("UTF-8");
+					OutputStream os = socket.getOutputStream();
+					os.write(byteArr);
+					os.flush();
 				}
 			} catch (Exception e) {	
 				RootLayoutController.getInstance().printText("[ 서버 접속 불가 ]");				
@@ -51,6 +45,8 @@ public class ClientImpl implements Client {
 //				e.printStackTrace();
 				return;
 			}
+			
+			dataReceiver();
 		});
 		
 		thread.start(); // 서버 접속 스레드 생성
@@ -73,18 +69,15 @@ public class ClientImpl implements Client {
 	}
 
 	@Override
-	public void dataSender(String data) {		
+	public void dataSender(String message) {		
 		Thread thread = new Thread(() -> {
 			try {
-				// 스트림 받아오기
-				OutputStreamWriter osw = null;
-				BufferedWriter bw = null;
-				osw = new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")); // 못 받아 올 경우
-				bw = new BufferedWriter(osw);
-				bw.write(data);
-				bw.flush();
-				
-				RootLayoutController.getInstance().printText("[메세지 전송] : " + data);
+				// 메세지 보내기
+				byte[] byteArr = message.getBytes("UTF-8");
+				OutputStream os = socket.getOutputStream();
+				os.write(byteArr);
+				os.flush();
+				RootLayoutController.getInstance().printText("[메세지 전송] : " + message);
 			} catch (Exception e) {
 				if (socket != null) {
 					disconnectFromServer("[ 서버 통신 불가 ]");
@@ -99,31 +92,21 @@ public class ClientImpl implements Client {
 
 	@Override
 	public void dataReceiver() {
-		// 스트림 받아오기
-		InputStreamReader isr = null;
-		BufferedReader br = null;
-		
-		try {
-			isr = new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")); // 못 받아 올 경우
-			br = new BufferedReader(isr);
-		} catch (Exception e) {
-			try {
-				br.close(); // 스트림 닫아주기
-				disconnectFromServer("[ 소켓을 참조할 수 없습니다. ]");
-			} catch (Exception e2) {}
-		}
-		
 		while (true) {
 			try {
-				// 서버에서 종료 할 경우 IOException 실행
-				String data = br.readLine();
+				// Client 비정상 종료일 경우 IOException 발생
+				byte[] byteArr = new byte[100];
+				InputStream is = socket.getInputStream();
 				
-				// 혹은 서버에서 QUIT MSG를 회신할 경우
-				if (data.equals(ClientMessageTag.QUIT.getTag())) {
+				// 비정상 종료 일 경우 IO예외
+				int readByteCount = is.read(byteArr);
+				if (readByteCount == -1) { // 정상 종료 일 경우 예외 발생
 					throw new IOException();
 				}
+
+				String message = new String(byteArr, 0, readByteCount, "UTF-8");
 				
-				RootLayoutController.getInstance().printText("[받은 메시지] : " + data);
+				RootLayoutController.getInstance().printText("[받은 메시지] : " + message);
 			} catch (Exception e) {
 				disconnectFromServer("[ 서버 통신 불가 ]");
 				break;

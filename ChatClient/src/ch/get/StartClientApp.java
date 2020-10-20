@@ -11,7 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class StartApp extends Application {
+public class StartClientApp extends Application {
 
 	public final static String TITLE_NAME = "ChatClient";
 	private Stage primaryStage;
@@ -42,7 +42,7 @@ public class StartApp extends Application {
 	// 메인 레이아웃 초기화
 	public void initRoot() {
 		try {
-			FXMLLoader loader = new FXMLLoader(StartApp.class.getResource("view/RootLayout.fxml"));
+			FXMLLoader loader = new FXMLLoader(StartClientApp.class.getResource("view/RootLayout.fxml"));
 			BorderPane borderPane = (BorderPane) loader.load();
 			Scene scene = new Scene(borderPane);
 			primaryStage.setScene(scene);

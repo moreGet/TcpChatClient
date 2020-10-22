@@ -9,10 +9,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class RootLayoutController implements Initializable {
@@ -23,7 +25,8 @@ public class RootLayoutController implements Initializable {
 	@FXML
 	private Button connectBtn;
 	@FXML
-	private TextArea textArea;
+	private AnchorPane textArea;
+//	private TextArea textArea;
 	@FXML
 	private TextField typingField;
 	
@@ -35,7 +38,8 @@ public class RootLayoutController implements Initializable {
 		typingField.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			if (KeyCode.ENTER.equals(event.getCode()) && !typingField.getText().isEmpty()) {
 				String data = typingField.getText();
-				printText(data);
+//				printText(data);
+				printMyText(data);
 				ClientImpl.getInstance().dataSender(data);
 				typingField.clear();
 			}
@@ -50,9 +54,20 @@ public class RootLayoutController implements Initializable {
 	
 	// root TextArea
 	public void printText(String str) {
-		textArea.appendText(LogTime.getInstance().getTime() + str + "\r\n");
+		Platform.runLater(() -> {
+//			textArea.appendText(LogTime.getInstance().getTime() + str + "\r\n");
+		});	
 	}
 
+	public void printMyText(String str) {
+		Label label = new Label(LogTime.getInstance().getTime() + str + "\r\n");
+		label.setContentDisplay(ContentDisplay.RIGHT);
+		
+//		Platform.runLater(() -> {
+//			textArea.setClip(label);
+//		});
+	}
+	
 	public void setApp(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 	}

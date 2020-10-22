@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Optional;
 
 import ch.get.view.RootLayoutController;
 import javafx.application.Platform;
@@ -42,7 +43,7 @@ public class ClientImpl implements Client {
 			} catch (Exception e) {	
 				RootLayoutController.getInstance().printText("[ 서버 접속 불가 ]");				
 				disconnectFromServer("연결 요청 중단"); // 에러 상황 에서는 소켓 닫기
-//				e.printStackTrace();
+				e.printStackTrace();
 				return;
 			}
 			
@@ -77,17 +78,22 @@ public class ClientImpl implements Client {
 				OutputStream os = socket.getOutputStream();
 				os.write(byteArr);
 				os.flush();
-				RootLayoutController.getInstance().printText("[메세지 전송] : " + message);
+				System.out.println("dd");
+//				RootLayoutController.getInstance().printText("[메세지 전송] : " + message);
 			} catch (Exception e) {
 				if (socket != null) {
 					disconnectFromServer("[ 서버 통신 불가 ]");
-				} else {
-					RootLayoutController.getInstance().printText("[서버 접속이 필요 합니다]");
 				}
 			}
 		});
 		
-		thread.start(); // 수신 스레드 생성
+		boolean socketVaild = Optional.ofNullable(socket).filter( check -> check.isConnected()).isPresent();
+		
+		if (socketVaild) {
+			thread.start(); // 송신 스레드 생성
+		} else {
+			RootLayoutController.getInstance().printText("[서버 접속이 필요 합니다]");
+		}
 	}
 
 	@Override

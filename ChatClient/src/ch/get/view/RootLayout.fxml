@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.get.view.RootLayoutController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="350.0" minWidth="500.0" prefHeight="350.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.get.view.RootLayoutController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -58,6 +61,12 @@
       </GridPane>
    </bottom>
    <center>
-      <AnchorPane fx:id="textArea" BorderPane.alignment="CENTER" />
+      <ScrollPane fx:id="textArea" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="textArea" stylesheets="@../css/ChatBox.css">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <content>
+            <VBox fx:id="chatBox" alignment="TOP_CENTER" spacing="5.0" />
+         </content></ScrollPane>
    </center>
 </BorderPane>

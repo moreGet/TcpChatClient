@@ -41,8 +41,8 @@ public class ClientImpl implements Client {
 					os.flush();
 				}
 			} catch (Exception e) {	
-				RootLayoutController.getInstance().printText("[ 서버 접속 불가 ]");				
-				disconnectFromServer("연결 요청 중단"); // 에러 상황 에서는 소켓 닫기
+				RootLayoutController.getInstance().printText("[ 서버가 닫혀 있습니다 ]");				
+				disconnectFromServer("[ 연결 요청 중단 ]"); // 에러 상황 에서는 소켓 닫기
 				e.printStackTrace();
 				return;
 			}
@@ -59,7 +59,7 @@ public class ClientImpl implements Client {
 			try {
 				socket.close();
 				Platform.runLater(() -> {
-					RootLayoutController.getInstance().printText("[ " + msg + " ]");
+					RootLayoutController.getInstance().printText(msg);
 				});
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -92,7 +92,7 @@ public class ClientImpl implements Client {
 		if (socketVaild) {
 			thread.start(); // 송신 스레드 생성
 		} else {
-			RootLayoutController.getInstance().printText("[서버 접속이 필요 합니다]");
+			RootLayoutController.getInstance().printText("[ 서버 접속이 필요 합니다 ]");
 		}
 	}
 
@@ -112,7 +112,7 @@ public class ClientImpl implements Client {
 
 				String message = new String(byteArr, 0, readByteCount, "UTF-8");
 				
-				RootLayoutController.getInstance().printText("[받은 메시지] : " + message);
+				RootLayoutController.getInstance().printText("[ 받은 메시지 ] : " + message);
 			} catch (Exception e) {
 				disconnectFromServer("[ 서버 통신 불가 ]");
 				break;
